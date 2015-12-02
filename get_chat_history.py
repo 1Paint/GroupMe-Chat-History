@@ -5,6 +5,18 @@ import time
 from urllib2 import urlopen
 from json import load
 
+<<<<<<< HEAD
+from PyQt4 import QtGui, QtCore
+
+message_limit = 100  # cannot be greater than 100
+
+def get_URL(token, group_id):
+    url = "https://api.groupme.com/v3/groups/%s/messages" % group_id
+    url += "?token=%s" % token
+    url += "&limit=%i" % message_limit
+    
+    return url
+=======
 token = TOKEN
 group_id = GROUP_ID
 message_limit = 100  # cannot be greater than 100
@@ -12,6 +24,7 @@ message_limit = 100  # cannot be greater than 100
 url = "https://api.groupme.com/v3/groups/%i/messages" % group_id
 url += "?token=%s" % token
 url += "&limit=%i" % message_limit
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
 
 def get_json(url):
     """Obtain information in JSON format."""
@@ -20,12 +33,25 @@ def get_json(url):
         
     return json_obj
 
+<<<<<<< HEAD
+def get_chat_history(json, old_date, url, f):
+=======
 def get_chat_history(json, old_date):
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
     """
     Retrieve and write down all dates, times, names, and messages in a
     groupme group chat. Messages are retrieved in reverse-chronological
     order---the most recent messages are retrieved first.
 
+<<<<<<< HEAD
+    Parameters:
+        json: The GroupMe API response in JSON format.
+        old_date: The date of the most recent message.
+        url: The URL being worked with.
+        f: The temporary file being written to.
+
+=======
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
     Messages are retrieved in sets. The amount of messages per set is
     equal to 'message_limit'. 
 
@@ -49,11 +75,19 @@ def get_chat_history(json, old_date):
 
             name = json['response']['messages'][i]['name']
             text = json['response']['messages'][i]['text']
+<<<<<<< HEAD
+            line = '%s %s: %s\n' % (hour, name, text)
+
+            # Separate messages by date.
+            if date != old_date:
+                f.write('=======\n%s\n\n' % old_date)
+=======
             line = '*%s* **%s**: %s\n\n' % (hour, name, text)
 
             # Separate messages by date.
             if date != old_date:
                 f.write('=======\n%s\n' % old_date)
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
                 old_date = date
 
             # Write times, names, and messages.
@@ -64,15 +98,26 @@ def get_chat_history(json, old_date):
                 before_id = json['response']['messages'][i]['id']
                 next_url = "%s&before_id=%s" % (url, before_id)
                 next_json_obj = get_json(next_url)
+<<<<<<< HEAD
+                get_chat_history(next_json_obj, old_date, url, f)
+=======
                 get_chat_history(next_json_obj, old_date)
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
                 
     except IndexError:
         f.write('=======\n%s\n' % old_date)  # date of group creation
 
+<<<<<<< HEAD
+def reverse(group_id):
+    """Order messages from earliest to most recent, top to bottom."""
+    f = open(('%s_history.txt' % group_id), 'r')
+    final = open(('%s_chat_history.md' % group_id), 'w')
+=======
 def reverse():
     """Order messages from earliest to most recent, top to bottom."""
     f = open(('%i_history.txt' % group_id), 'r')
     final = open(('%i_chat_history.md' % group_id), 'w')
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
 
     # Correctly order the messages.
     for line in reversed(f.readlines()):
@@ -80,6 +125,84 @@ def reverse():
 
     f.close()
     final.close()
+<<<<<<< HEAD
+    os.remove('%s_history.txt' % group_id)  # delete reversed-chat file
+
+class AppWindow(QtGui.QDialog):
+    def __init__(self):
+        QtGui.QDialog.__init__(self)
+        self.setFixedSize(350, 110)
+        
+        layout = QtGui.QGridLayout()
+
+        token_label = QtGui.QLabel("Access Token")
+        self.token = QtGui.QLineEdit()
+        self.token.setFixedWidth(250)
+        token_line = QtGui.QHBoxLayout()
+        token_line.addStretch(0)
+        token_line.addWidget(token_label)
+        token_line.addWidget(self.token)
+        
+        group_id_label = QtGui.QLabel("Group ID")
+        self.group_id = QtGui.QLineEdit()
+        self.group_id.setFixedWidth(250)
+        group_id_line = QtGui.QHBoxLayout()
+        group_id_line.addStretch(0)
+        group_id_line.addWidget(group_id_label)
+        group_id_line.addWidget(self.group_id)
+        
+        update_button = QtGui.QPushButton('Ok')
+        update_button.clicked.connect(self.okay)
+        cancel_button = QtGui.QPushButton('Cancel')
+        cancel_button.clicked.connect(self.cancel)
+        
+        buttonBox = QtGui.QDialogButtonBox()
+        buttonBox.addButton(update_button, QtGui.QDialogButtonBox.ActionRole)
+        buttonBox.addButton(cancel_button, QtGui.QDialogButtonBox.ActionRole)
+        
+        button_line = QtGui.QHBoxLayout()
+        button_line.addStretch(0)
+        button_line.addWidget(buttonBox)
+        button_line.addStretch(0)
+                
+        layout.addLayout(token_line, 0, 0)
+        layout.addLayout(group_id_line, 1, 0)
+        layout.addLayout(button_line, 2, 0)
+        
+        self.setLayout(layout)
+
+    # Obtain the chat log.
+    def okay(self):
+        self.setWindowTitle("Please Wait")
+        
+        token = str(self.token.text())
+        group_id = str(self.group_id.text())
+        
+        url = get_URL(token, group_id)
+        
+        initial_json = get_json(url)
+        initial_time = initial_json['response']['messages'][0]['created_at']
+        initial_date = time.strftime('%d %b %Y', time.localtime(initial_time))
+        
+        f = open(('%s_history.txt' % group_id), 'w')
+        get_chat_history(initial_json, initial_date, url, f)
+        f.close()
+        reverse(group_id)
+        
+        self.setWindowTitle("Done")
+        
+    # Close the window.
+    def cancel(self):
+        self.close()
+            
+if __name__ == '__main__':
+    app = QtGui.QApplication(sys.argv)
+    
+    aw = AppWindow()
+    aw.setWindowTitle("Get GroupMe Group Chat History")
+    aw.show()
+    sys.exit(app.exec_())
+=======
     os.remove('%i_history.txt' % group_id)  # delete reversed-chat file
 
 if __name__ == '__main__':
@@ -95,3 +218,4 @@ if __name__ == '__main__':
     reverse()
     
 
+>>>>>>> 54f57a68a7d4e364d6205a3056838994c1c1471f
