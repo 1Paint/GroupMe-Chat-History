@@ -10,6 +10,7 @@ from PyQt4 import QtGui, QtCore
 message_limit = 100  # cannot be greater than 100
 
 def get_URL(token, group_id):
+    """Retrieve the URL given an access token and group ID."""
     url = "https://api.groupme.com/v3/groups/%s/messages" % group_id
     url += "?token=%s" % token
     url += "&limit=%i" % message_limit
@@ -50,23 +51,30 @@ def get_chat_history(json, old_date, url, f):
     """
     try:
         for i in range(message_limit):
-            
             # Parse the data and retrieve times, names, and messages.
             epoch_time = json['response']['messages'][i]['created_at']
             date = time.strftime('%d %b %Y', time.localtime(epoch_time))
-            hour = time.strftime('%H:%M:%S', time.localtime(epoch_time))
 
             name = json['response']['messages'][i]['name']
+            hour = time.strftime('%H:%M:%S', time.localtime(epoch_time))
             text = json['response']['messages'][i]['text']
-            line = '%s %s: %s\n' % (hour, name, text)
+            if text: text = text.encode('unicode-escape')  # escape \n, etc.
+
+            # format into HTML
+            name = '<td nowrap align="right" valign="top"><b>%s' % name
+            hour = '(%s):</b></td>' % hour
+            text = '<td>%s</td>' % text
+            line = '<tr>%s %s %s</tr>\n' % (name, hour, text)
 
             # Separate messages by date.
             if date != old_date:
-                f.write('=======\n%s\n\n' % old_date)
+                f.write('<table>\n')
+                f.write('<tr><td><h3>%s</h3></td></tr>\n' % old_date)
+                f.write('</table>\n')
                 old_date = date
 
             # Write times, names, and messages.
-            f.write(line.encode('ascii', 'ignore'))
+            f.write(line.encode('UTF-8', 'replace'))
 
             # Iterate through the next set of messages.
             if i == message_limit-1:
@@ -76,20 +84,30 @@ def get_chat_history(json, old_date, url, f):
                 get_chat_history(next_json_obj, old_date, url, f)
                 
     except IndexError:
-        f.write('=======\n%s\n' % old_date)  # date of group creation
+        f.write('<table>\n')
+        f.write('<tr><h3>%s</h3></tr>\n' % old_date)  # date of group creation
 
-def reverse(group_id):
-    """Order messages from earliest to most recent, top to bottom."""
+def final_format(group_id):
+    """
+    Add HTML headers and footers and order messages from earliest to
+    most recent, top to bottom.
+    """
     f = open(('%s_history.txt' % group_id), 'r')
-    final = open(('%s_chat_history.md' % group_id), 'w')
+    final = open(('%s_chat_history.html' % group_id), 'w')
+
+    header = '<!DOCTYPE html>\n<html>\n<body>\n'
+    final.write(header)
 
     # Correctly order the messages.
     for line in reversed(f.readlines()):
         final.write(line)
 
+    footer = '</body>\n</html>'
+    final.write(footer)
+
     f.close()
     final.close()
-    os.remove('%s_history.txt' % group_id)  # delete reversed-chat file
+    os.remove('%s_history.txt' % group_id)  # delete reverse-chronological chat file
 
 class AppWindow(QtGui.QDialog):
     def __init__(self):
@@ -134,8 +152,8 @@ class AppWindow(QtGui.QDialog):
         
         self.setLayout(layout)
 
-    # Obtain the chat log.
     def okay(self):
+        """Obtain and format the chat log."""        
         self.setWindowTitle("Please Wait")
         
         token = str(self.token.text())
@@ -150,12 +168,12 @@ class AppWindow(QtGui.QDialog):
         f = open(('%s_history.txt' % group_id), 'w')
         get_chat_history(initial_json, initial_date, url, f)
         f.close()
-        reverse(group_id)
+        final_format(group_id)
         
         self.setWindowTitle("Done")
         
-    # Close the window.
     def cancel(self):
+        """Close the window."""
         self.close()
             
 if __name__ == '__main__':
