@@ -1,4 +1,24 @@
-# 1 second ~ 360 messages
+"""
+This script retrieves the chat histories of a user when given the
+user's access token. This script interacts with the user via the
+console.
+
+Users can obtain access tokens at https://dev.groupme.com/ by logging
+in and clicking 'Access Token' at the top right of the page.
+
+Upon being given an access token, the application communicates with
+GroupMe's public API (https://dev.groupme.com/docs/v3) and lists all
+current group and direct message chats of the access token's owner.
+The user can then input a chat's type and its ID to retrieve its
+history. The application estimates the runtime upon retrieval.
+
+Chat histories are retrieved with the most recent messages being
+obtained first---Messages are thus written in reverse-chronological
+order, top to bottom. These messages are put into a temporary text
+file before being written in chronological order into an HTML file.
+The temporary text file is then deleted and a CSS file is created 
+to format the HTML file for readability.
+"""
 
 import os
 import time
@@ -67,6 +87,8 @@ def get_directs(token):
     
 def create_history(json, old_date, self_id, url, chat_type, f):
     """
+    Create a temporary chat history file.
+    
     Retrieve and write down all dates, times, names, and messages in a
     groupme group chat. Messages are retrieved in reverse-chronological
     order---the most recent messages are retrieved first. The file is
@@ -89,9 +111,9 @@ def create_history(json, old_date, self_id, url, chat_type, f):
     'message_limit' is 100, the final set of messages contains 57
     messages (257 mod 100). These 57 messages are obtained when
     iterating from i = 0-56. An attempt to obtain the 58th message
-    corresponding to i = 57 raises the 'IndexError.' This indicates that
-    the earliest message in the group chat has been retrieved. The date
-    of the group's creation is then written.
+    corresponding to i = 57 raises the 'IndexError.' This indicates 
+    that the earliest message in the group chat has been retrieved. The
+    date of the group's creation is then written.
     """
     if chat_type == 'group':
         msg = 'messages'
@@ -150,11 +172,12 @@ def format_history(chat_type, chat_ID):
     final = open(('%s_%s_chat_history.html' % (chat_ID, chat_type)), 'w')
 
     # Create the header and reference the CSS file.
-    header = ('<!DOCTYPE html>\n<html>\n<body>\n'
-                '<head>\n'
-                '<link rel="stylesheet" href="styles.css" type="text/css">\n'
-                '</head>\n'
-                '<table>\n')
+    header = (
+        '<!DOCTYPE html>\n<html>\n<body>\n'
+        '<head>\n'
+        '<link rel="stylesheet" href="styles.css" type="text/css">\n'
+        '</head>\n'
+        '<table>\n')
     final.write(header)
 
     # Correctly order the messages.
@@ -173,61 +196,69 @@ def create_css():
     """Create a CSS file to format the HTML file."""
     if not os.path.isfile('styles.css'):
         f = open('styles.css', 'w')
-        f.write('body {\n'
-                '    font-family: Arial, serif;\n'
-                '}\n')
-        f.write('table {\n'
-                '    table-layout: fixed;\n'  # scale to browser width
-                '}\n')
-        f.write('td.date {\n'
-                '    font-size: 140%;\n'
-                '    font-weight: 600;\n'
-                '    color: #FFFFFF;\n'
-                '    padding-left: 4px;\n'
-                '    background: #696969;\n'
-                '}\n')
-        f.write('td.self_name {\n'
-                '    font-size: 11pt;\n'
-                '    font-weight: bold;\n'
-                '    color: #00CC00;\n'
-                '    text-align: right;\n'
-                '    vertical-align: text-top;\n'
-                '    padding-left: 20px;\n'
-                '    padding-top: 3px;\n'
-                '    padding-bottom: 3px;\n'
-                '    white-space: nowrap;\n'
-                '}\n')
-        f.write('td.self_hour {\n'
-                '    font-size: 11pt;\n'
-                '    font-weight: bold;\n'
-                '    color: #00CC00\n;'
-                '    padding-top: 3px;\n'
-                '    padding-bottom: 3px;\n'
-                '    vertical-align: text-top;\n'
-                '}\n')
-        f.write('td.name {\n'
-                '    font-size: 11pt;\n'
-                '    font-weight: bold;\n'
-                '    color: #6495ED;\n'
-                '    text-align: right;\n'
-                '    vertical-align: text-top;\n'
-                '    padding-left: 20px;\n'
-                '    padding-top: 3px;\n'
-                '    padding-bottom: 3px;\n'
-                '    white-space: nowrap;\n'
-                '}\n')
-        f.write('td.hour {\n'
-                '    font-size: 11pt;\n'
-                '    font-weight: bold;\n'
-                '    color: #6495ED;\n'
-                '    padding-top: 3px;\n'
-                '    padding-bottom: 3px;\n'
-                '    vertical-align: text-top;\n'
-                '}\n')
-        f.write('td.text {\n'
-                '    font-size: 11pt;\n'
-                '    word-break: break-word;\n'  # wrap long messages
-                '}\n')
+        f.write(
+            'body {\n'
+            '    font-family: Arial, serif;\n'
+            '}\n')
+        f.write(
+            'table {\n'
+            '    table-layout: fixed;\n'  # scale to browser width
+            '}\n')
+        f.write(
+            'td.date {\n'
+            '    font-size: 140%;\n'
+            '    font-weight: 600;\n'
+            '    color: #FFFFFF;\n'
+            '    padding-left: 4px;\n'
+            '    background: #696969;\n'
+            '}\n')
+        f.write(
+            'td.self_name {\n'
+            '    font-size: 11pt;\n'
+            '    font-weight: bold;\n'
+            '    color: #00CC00;\n'
+            '    text-align: right;\n'
+            '    vertical-align: text-top;\n'
+            '    padding-left: 20px;\n'
+            '    padding-top: 3px;\n'
+            '    padding-bottom: 3px;\n'
+            '    white-space: nowrap;\n'
+            '}\n')
+        f.write(
+            'td.self_hour {\n'
+            '    font-size: 11pt;\n'
+            '    font-weight: bold;\n'
+            '    color: #00CC00\n;'
+            '    padding-top: 3px;\n'
+            '    padding-bottom: 3px;\n'
+            '    vertical-align: text-top;\n'
+            '}\n')
+        f.write(
+            'td.name {\n'
+            '    font-size: 11pt;\n'
+            '    font-weight: bold;\n'
+            '    color: #6495ED;\n'
+            '    text-align: right;\n'
+            '    vertical-align: text-top;\n'
+            '    padding-left: 20px;\n'
+            '    padding-top: 3px;\n'
+            '    padding-bottom: 3px;\n'
+            '    white-space: nowrap;\n'
+            '}\n')
+        f.write(
+            'td.hour {\n'
+            '    font-size: 11pt;\n'
+            '    font-weight: bold;\n'
+            '    color: #6495ED;\n'
+            '    padding-top: 3px;\n'
+            '    padding-bottom: 3px;\n'
+            '    vertical-align: text-top;\n'
+            '}\n')
+        f.write(
+            'td.text {\n'
+            '    font-size: 11pt;\n'
+            '    word-break: break-word;\n'  # wrap long messages
+            '}\n')
         f.close()
 
 def check_token(token):
@@ -278,7 +309,7 @@ def get_chat_info(token):
     get_chat_info(token)
     
 def list_chats(token):
-    """List the user's group and direct message chats."""
+    """Find and list the chats available."""
     # Obtain a list of chats for the user of the access token.
     groups = get_groups(token)
     directs = get_directs(token)
@@ -295,10 +326,25 @@ def list_chats(token):
     print "".join(i.ljust(col_width) for i in attributes)
     for direct in directs:
         print "".join(data.ljust(col_width) for data in direct)
+    
+def get_runtime(msg_count):
+    """
+    Estimate the time to retrieve the chat history based on the
+    number of messages in the selected chat.
+    """
+    seconds = msg_count/360  # based on tests; 360 messages ~= 1 second
+    minutes = seconds/60
+    seconds = seconds % 60
+    
+    runtime = ("Estimated Runtime: %i minutes %i seconds..."
+        % (minutes, seconds))
 
+    print runtime
+        
 def get_chat(token, chat_type, chat_ID):
-    """Obtain the requested chat history and store it in a formatted
-    HTML file.
+    """
+    Obtain the requested chat history and store it in a formatted HTML
+    file with CSS.
     """
     # Obtain the relevant URL.
     url = get_URL(token, chat_type, chat_ID)
@@ -312,7 +358,11 @@ def get_chat(token, chat_type, chat_ID):
     i_json = get_json(url)
     i_time = i_json['response'][msg][0]['created_at']
     i_date = time.strftime('%A, %d %B %Y', time.localtime(i_time))
-
+    
+    # Estimate the runtime.
+    msg_count = i_json['response']['count']
+    get_runtime(msg_count)
+        
     # Obtain the user's ID to color the user's name in the chat file.
     self_id = get_self_id(token)
 
