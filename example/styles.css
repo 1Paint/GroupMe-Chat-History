@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, serif;
+}
+table {
+    table-layout: fixed;
+}
+td.date {
+    font-size: 140%;
+    font-weight: 600;
+    color: #FFFFFF;
+    padding-left: 4px;
+    background: #696969;
+}
+td.self_name {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #00CC00;
+    text-align: right;
+    vertical-align: text-top;
+    padding-left: 20px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    white-space: nowrap;
+}
+td.self_hour {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #00CC00
+;    padding-top: 3px;
+    padding-bottom: 3px;
+    vertical-align: text-top;
+}
+td.name {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #6495ED;
+    text-align: right;
+    vertical-align: text-top;
+    padding-left: 20px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    white-space: nowrap;
+}
+td.hour {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #6495ED;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    vertical-align: text-top;
+}
+td.text {
+    font-size: 11pt;
+    word-break: break-word;
+}

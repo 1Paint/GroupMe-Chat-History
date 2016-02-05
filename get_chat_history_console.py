@@ -1,5 +1,4 @@
-"""
-This script retrieves the chat histories of a user when given the
+"""This script retrieves the chat histories of a user when given the
 user's access token. This script interacts with the user via the
 console.
 
@@ -86,8 +85,7 @@ def get_directs(token):
     return directs
     
 def create_history(json, old_date, self_id, url, chat_type, f):
-    """
-    Create a temporary chat history file.
+    """Create a temporary chat history file.
     
     Retrieve and write down all dates, times, names, and messages in a
     groupme group chat. Messages are retrieved in reverse-chronological
@@ -164,8 +162,7 @@ def create_history(json, old_date, self_id, url, chat_type, f):
         f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)    
         
 def format_history(chat_type, chat_ID):
-    """
-    Add HTML headers and footers and order messages from earliest to
+    """Add HTML headers and footers and order messages from earliest to
     most recent, top to bottom. Reference the HTML file to a CSS file.
     """
     f = open(('%s_chat_history.txt' % chat_ID), 'r')
@@ -328,8 +325,7 @@ def list_chats(token):
         print "".join(data.ljust(col_width) for data in direct)
     
 def get_runtime(msg_count):
-    """
-    Estimate the time to retrieve the chat history based on the
+    """Estimate the time to retrieve the chat history based on the
     number of messages in the selected chat.
     """
     seconds = msg_count/360  # based on tests; 360 messages ~= 1 second
@@ -342,9 +338,8 @@ def get_runtime(msg_count):
     print runtime
         
 def get_chat(token, chat_type, chat_ID):
-    """
-    Obtain the requested chat history and store it in a formatted HTML
-    file with CSS.
+    """Obtain the requested chat history and store it in a formatted
+    HTML file with CSS.
     """
     # Obtain the relevant URL.
     url = get_URL(token, chat_type, chat_ID)

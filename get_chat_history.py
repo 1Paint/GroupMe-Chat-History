@@ -1,5 +1,4 @@
-"""
-This application retrieves the chat histories of a user when given
+"""This application retrieves the chat histories of a user when given
 the user's access token.
 
 Users can obtain access tokens at https://dev.groupme.com/ by logging
@@ -87,8 +86,7 @@ def get_directs(token):
     return directs
     
 def create_history(json, old_date, self_id, url, chat_type, f):
-    """
-    Create a temporary chat history file.
+    """Create a temporary chat history file.
 
     Retrieve and write down all dates, times, names, and messages in a
     groupme group chat. Messages are retrieved in reverse-chronological
@@ -165,8 +163,7 @@ def create_history(json, old_date, self_id, url, chat_type, f):
         f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)    
         
 def format_history(chat_type, chat_ID):
-    """
-    Add HTML headers and footers and order messages from earliest to
+    """Add HTML headers and footers and order messages from earliest to
     most recent, top to bottom. Reference the HTML file to a CSS file.
     """
     f = open(('%s_chat_history.txt' % chat_ID), 'r')
@@ -281,7 +278,7 @@ class AppWindow(QtGui.QDialog):
         find_button = QtGui.QPushButton('Find Chats')
         find_button.clicked.connect(self.list_chats)
         cancel_button = QtGui.QPushButton('Cancel')
-        cancel_button.clicked.connect(self.cancel)
+        cancel_button.clicked.connect(self.close)
         
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(find_button, QtGui.QDialogButtonBox.ActionRole)
@@ -393,8 +390,7 @@ class AppWindow(QtGui.QDialog):
         self.get_chat(self.token_str, 'direct', direct_id)
         
     def get_runtime(self, msg_count):
-        """
-        Estimate the time to retrieve the chat history based on the
+        """Estimate the time to retrieve the chat history based on the
         number of messages in the selected chat.
         """
         seconds = msg_count/360  # based on tests; 360 messages ~= 1 second
@@ -407,9 +403,8 @@ class AppWindow(QtGui.QDialog):
         self.status.showMessage(runtime)
 
     def get_chat(self, token, chat_type, chat_ID):
-        """
-        Obtain the requested chat history and store it in a formatted HTML
-        file with CSS.
+        """Obtain the requested chat history and store it in a formatted
+        HTML file with CSS.
         """
         self.setWindowTitle("Retrieving Chat History, Please Wait...")
         # Obtain the relevant URL.
@@ -438,11 +433,8 @@ class AppWindow(QtGui.QDialog):
         format_history(chat_type, chat_ID) 
         create_css()
         
+        self.status.showMessage("")
         self.setWindowTitle("Done")
-    
-    def cancel(self):
-        """Close the window."""
-        self.close()
             
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
