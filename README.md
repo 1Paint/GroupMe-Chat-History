@@ -7,7 +7,7 @@ get_chat_history
 Requirements
 -------
 * [Python](https://www.python.org/)
-* [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download)(only necessary for the non-console version)
+* [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (only necessary for the non-console version)
 * A GroupMe Access Token obtainable at [https://dev.groupme.com/](https://dev.groupme.com/).
 
 How To Use the Application
