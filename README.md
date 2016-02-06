@@ -5,6 +5,15 @@ get_chat_history
 * **get_chat_history.py** - interacts with the user with a windowed GUI.
 * **get_chat_history_console.py** - interacts with the user via the command line or console.
 
+Preview
+-------
+### Application
+<img src="http://i.imgur.com/N0Zqphs.png">
+
+<img src="http://i.imgur.com/5wgm16i.png">
+### Output
+<img src="http://i.imgur.com/mV7iA3H.png">
+
 Requirements
 -------
 * [Python](https://www.python.org/)
@@ -13,4 +22,4 @@ Requirements
 
 How To Use
 -------
-Please see 'app_manual.pdf' in the 'documentation' folder for images of the application and a usage example.
+Please see 'app_manual.pdf' in the 'documentation' folder.
