@@ -12,4 +12,4 @@ Requirements
 
 How To Use the Application
 -------
-Please see 'app_manual.pdf' in the 'documentation' folder.
+Please see 'app_manual.pdf' in the 'documentation' folder for images of the application and a usage example.
