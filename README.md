@@ -22,4 +22,4 @@ Requirements
 
 How To Use
 -------
-Please see 'app_manual.pdf' in the 'documentation' folder.
+Please see 'app_manual.pdf' in the 'documentation' folder. If you are using the console version, run the script and follow the outputted instructions.
