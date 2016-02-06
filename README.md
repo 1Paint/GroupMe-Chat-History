@@ -2,9 +2,9 @@ get_chat_history
 =======
 
 **'get_chat_history'** is an application that can retrieve and download the chat histories of GroupMe users. Three versions of the application exists:
-* **get_chat_history.py** - interacts with the user via a windowed GUI (requires Python and PyQt4).
+* **get_chat_history.py** - interacts with the user via a windowed GUI. Run this script only if you have both Python and PyQt4.
 * **get_chat_history_console.py** - interacts with the user via the command line or console. Run this script if you have Python but not PyQt4.
-* **get_chat_history.exe** - an executable file that does what 'get_chat_history.py' does, but can be run without needing Python or PyQt4. Obtain by downloading and extracting the .zip file in the 'executable' folder.
+* **get_chat_history.exe** - an executable file that does what 'get_chat_history.py' does. Run this if you do not have Python or PyQt4. Obtain by downloading and extracting the .zip file in the 'executable' folder.
 
 Preview
 -------
