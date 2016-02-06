@@ -1,5 +1,6 @@
 get_chat_history
 =======
+
 **'get_chat_history'** is an application that can retrieve and download the chat histories of GroupMe users. Two versions of the application exists:
 * **get_chat_history.py** - interacts with the user with a windowed GUI.
 * **get_chat_history_console.py** - interacts with the user via the command line or console.
