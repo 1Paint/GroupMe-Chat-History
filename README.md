@@ -8,7 +8,7 @@ Requirements
 -------
 * [Python](https://www.python.org/)
 * [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (only necessary for the non-console version)
-* A GroupMe Access Token obtainable at [https://dev.groupme.com/](https://dev.groupme.com/).
+* A GroupMe Access Token obtainable at by loggin in to [https://dev.groupme.com/](https://dev.groupme.com/) and clicking 'Access Token' at the top right.
 
 How To Use the Application
 -------
