@@ -10,6 +10,6 @@ Requirements
 * [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (only necessary for the non-console version)
 * A GroupMe Access Token obtainable at by logging in to [https://dev.groupme.com/](https://dev.groupme.com/) and clicking 'Access Token' at the top right.
 
-How To Use the Application
+How To Use
 -------
 Please see 'app_manual.pdf' in the 'documentation' folder for images of the application and a usage example.
