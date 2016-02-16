@@ -17,7 +17,7 @@ Preview
 
 Requirements
 -------
-* [Python 2](https://www.python.org/downloads/)
+* [Python 2.7.10+](https://www.python.org/downloads/)
 * [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (only necessary for the non-console script)
 * A GroupMe Access Token obtainable at by logging in to [https://dev.groupme.com/](https://dev.groupme.com/) and clicking 'Access Token' at the top right.
 
