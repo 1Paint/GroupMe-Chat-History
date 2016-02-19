@@ -30,4 +30,4 @@ Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob
 Possible Future Updates
 -------
 * A way to update existing chat history files. Not a top priority since this application is designed for one-time use.
-* Distinguish users in the chat histories with more colors, and not just green for the user and blue for everyone else.
+* Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
