@@ -26,3 +26,8 @@ If you are using the executable version, you do not need Python or PyQt4.
 How To Use
 -------
 Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob/master/documentation/app_manual.pdf)' in the '[documentation](https://github.com/1Paint/groupme_chat_history/tree/master/documentation)' folder. If you are using the console version, run the script and follow the outputted instructions.
+
+Possible Future Updates
+-------
+* A way to update existing chat history files. Not a top priority since this application is designed for one-time use.
+* Distinguish users in the chat histories with more colors, and not just green for the user and blue for everyone else.
