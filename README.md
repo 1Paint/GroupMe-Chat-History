@@ -12,6 +12,8 @@ Preview
 <img src="http://i.imgur.com/N0Zqphs.png">
 
 <img src="http://i.imgur.com/5wgm16i.png">
+
+<img src="http://i.imgur.com/YzT7iOv.png">
 ### Output
 <img src="http://i.imgur.com/mV7iA3H.png">
 
