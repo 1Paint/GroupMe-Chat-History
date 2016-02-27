@@ -14,7 +14,7 @@ Chat histories are retrieved with the most recent messages being
 obtained first---Messages are thus written in reverse-chronological
 order, top to bottom. These messages are put into a temporary text
 file before being written in chronological order into an HTML file.
-The temporary text file is then deleted and a CSS file is created 
+The temporary text file is then deleted and a CSS file is created
 to format the HTML file for readability.
 """
 import sys
@@ -25,11 +25,11 @@ import urllib2
 from json import load
 
 from PyQt4 import QtGui, QtCore
-
+    
 message_limit = 100  # cannot be greater than 100
 
 def get_URL(token, chat_type, chat_ID):
-    """Retrieve the URL given an access token, chat type, and an ID."""
+    """Retrieve the API URL given an access token, chat type, and an ID."""
     if chat_type == 'group':
         url = 'https://api.groupme.com/v3/groups/%s/messages' % chat_ID
         url += "?token=%s" % token
@@ -39,16 +39,16 @@ def get_URL(token, chat_type, chat_ID):
         url += "&token=%s" % token
 
     url += "&limit=%i" % message_limit
-    
+
     return url
 
 def get_json(url):
     """Retrieve the JSON response from an API."""
     response = urllib2.urlopen(url)
     json = load(response)
-    
+
     return json
-    
+
 def get_self_id(token):
     """Obtain a user's ID given their token."""
     url = "https://api.groupme.com/v3/users/me?token=%s" % token
@@ -56,13 +56,13 @@ def get_self_id(token):
     user_id = json['response']['user_id']
 
     return user_id
-    
+
 def get_groups(token):
     """Return a list of group chats' IDs and names."""
     url = 'https://api.groupme.com/v3/groups?token=%s' % token
     json = get_json(url)
     response = json['response']
-    
+
     groups = []
     for i in response:
         ID = i['id']
@@ -70,13 +70,13 @@ def get_groups(token):
         groups.append([ID, name])
 
     return groups
-    
+
 def get_directs(token):
     """Return a list of direct message chats' IDs and names."""
     url = 'https://api.groupme.com/v3/chats?token=%s' % token
     json = get_json(url)
     response = json['response']
-    
+
     directs = []
     for i in response:
         ID = i['other_user']['id']
@@ -84,8 +84,9 @@ def get_directs(token):
         directs.append([ID, name])
 
     return directs
-    
-def create_history(json, old_date, self_id, url, chat_type, f):
+
+def create_history(json, old_date, self_id, url, chat_type, f, 
+                   msg_count, msg_limit):
     """Create a temporary chat history file.
 
     Retrieve and write down all dates, times, names, and messages in a
@@ -100,29 +101,31 @@ def create_history(json, old_date, self_id, url, chat_type, f):
         url: The URL being worked with.
         chat_type: The type of chat---'group' or 'direct'.
         f: The temporary file being written to.
-
-    Messages are retrieved in sets. The amount of messages per set is
-    equal to 'message_limit'. 
-
-    An 'IndexError' is raised when the total number of messages in the
-    group chat is not a multiple of 'message_limit'. To illustrate: if
-    the total number of messages in the group chat is 257 and the
-    'message_limit' is 100, the final set of messages contains 57
-    messages (257 mod 100). These 57 messages are obtained when
-    iterating from i = 0-56. An attempt to obtain the 58th message
-    corresponding to i = 57 raises the 'IndexError.' This indicates
-    that the earliest message in the group chat has been retrieved. The
-    date of the group's creation is then written.
+        msg_count: The total number of messages in the chat.
+        msg_limit: The number of messages retrieved in a set.
+        
+    Messages are written down one at a time, each time decrementing 'msg_count'
+    by 1. When this count reaches 0, all messages have been retrieed.
     """
     if chat_type == 'group':
         msg = 'messages'
     elif chat_type == 'direct':
         msg = 'direct_messages'
-        
-    try:
-        for i in range(message_limit):
+  
+    while msg_count > 0:
+        # If there are less than 'msg_limit' messages to obtain, only
+        # iterate through however many messages there are.
+        if msg_count < msg_limit:
+            msg_limit = msg_count % msg_limit
+        for i in range(msg_limit):
             # Parse the data and retrieve times, names, and messages.
-            epoch_time = json['response'][msg][i]['created_at']
+            # If the final number of messages is less than expected, set the
+            # message count to 0 since all messages will have been retrieved.
+            try:
+                epoch_time = json['response'][msg][i]['created_at']
+            except IndexError:
+                msg_count = 0
+                break
             date = time.strftime('%A, %d %B %Y', time.localtime(epoch_time))
 
             user_id = json['response'][msg][i]['user_id']
@@ -151,17 +154,24 @@ def create_history(json, old_date, self_id, url, chat_type, f):
             # Write down times, names, and messages.
             f.write(line.encode('UTF-8', 'replace'))
 
-            # Iterate through the next set of messages.
-            if i == message_limit-1:
-                before_id = json['response'][msg][i]['id']
-                next_url = "%s&before_id=%s" % (url, before_id)
-                next_json = get_json(next_url)
-                create_history(next_json, old_date, self_id, url, chat_type, f)
-                
-    except IndexError:
-        # Finally, write the group creation date.
-        f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)    
-        
+            # Once we have reached the 'msg_limit', store the latest message ID
+            # and use it to obtain the API URL and JSON file for the next set
+            # of messages. If there are no new messages, set the message count
+            # to 0 to finish chat retrieval.
+            msg_count -= 1
+            if msg_count != 0 and i == msg_limit - 1:
+                try:
+                    before_id = json['response'][msg][i]['id']
+                    new_url = "%s&before_id=%s" % (url, before_id)
+                    json = get_json(new_url)
+                except urllib2.HTTPError, err:
+                    if err.code == 304:
+                        msg_count = 0
+
+        if msg_count == 0:
+            # Finally, write the group creation date.
+            f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)
+
 def format_history(chat_type, chat_ID):
     """Add HTML headers and footers and order messages from earliest to
     most recent, top to bottom. Reference the HTML file to a CSS file.
@@ -189,7 +199,7 @@ def format_history(chat_type, chat_ID):
     f.close()
     final.close()
     os.remove('%s_chat_history.txt' % chat_ID)
-    
+
 def create_css():
     """Create a CSS file to format the HTML file."""
     if not os.path.isfile('styles.css'):
@@ -258,14 +268,15 @@ def create_css():
             '    word-break: break-word;\n'  # wrap long messages
             '}\n')
         f.close()
-    
+
 class AppWindow(QtGui.QDialog):
     """This is the main application window users interact with."""
-    def __init__(self):
+    def __init__(self, msg_limit):
         QtGui.QDialog.__init__(self)
-        self.setFixedWidth(350)  
+        self.msg_limit = msg_limit
+        self.setFixedWidth(350)
         self.list_exists = False  # no chat lists have yet been retrieved
-        
+
         self.layout = QtGui.QVBoxLayout()
 
         token_label = QtGui.QLabel("Access Token")
@@ -274,26 +285,26 @@ class AppWindow(QtGui.QDialog):
         token_line = QtGui.QHBoxLayout()
         token_line.addWidget(token_label)
         token_line.addWidget(self.token)
-        
+
         find_button = QtGui.QPushButton('Find Chats')
         find_button.clicked.connect(self.list_chats)
         cancel_button = QtGui.QPushButton('Cancel')
         cancel_button.clicked.connect(self.close)
-        
+
         buttonBox = QtGui.QDialogButtonBox()
         buttonBox.addButton(find_button, QtGui.QDialogButtonBox.ActionRole)
         buttonBox.addButton(cancel_button, QtGui.QDialogButtonBox.ActionRole)
-        
+
         button_line = QtGui.QHBoxLayout()
         button_line.addStretch(0)
         button_line.addWidget(buttonBox)
         button_line.addStretch(0)
-                
+
         self.layout.addLayout(token_line)
         self.layout.addLayout(button_line)
-        
+
         self.setLayout(self.layout)
-        
+
     def check_token(self, token):
         """Check the validity of the access token."""
         try:
@@ -301,94 +312,98 @@ class AppWindow(QtGui.QDialog):
             valid = True
         except:
             valid = False
-            
+
         return valid
-    
+
     def list_chats(self):
         """Find and list the chats available."""
         self.setWindowTitle("Loading...")
-            
+
         token = str(self.token.text())  # obtain user-inputted token
         self.token_str = token
         valid = self.check_token(token)
-        
+
         # Find all chats if the given token is valid.
         if valid == False:
             self.setWindowTitle("Please Check Your Access Token")
         elif valid == True:
-            self.setWindowTitle("Select Chat History to Retrieve")
-            # Remove the current chat list if one already exists.
-            if self.list_exists:
-                self.layout.removeWidget(self.group_list)
-                self.layout.removeWidget(self.direct_list)
-                
-            # Create the list group chats.
-            self.group_list = QtGui.QListWidget()
-            self.group_list.setFixedHeight(100)
-            
+            # Create the list of group chats.
+            if self.list_exists == False:
+                self.group_list = QtGui.QListWidget()
+                self.group_list.setFixedHeight(100)
+            # If a list already exists, clear it.
+            else:
+                self.group_list.clear()
+
             self.groups = get_groups(token)
             for i in self.groups:
                 item = QtGui.QListWidgetItem(i[1])
                 self.group_list.addItem(item)
-            
+
             # Create the list of direct messaging chats.
-            self.direct_list = QtGui.QListWidget()
-            self.direct_list.setFixedHeight(100)
-            
+            if self.list_exists == False:
+                self.direct_list = QtGui.QListWidget()
+                self.direct_list.setFixedHeight(100)
+            # If a list already exists, clear it.
+            else:
+                self.direct_list.clear()
+
             self.directs = get_directs(token)
             for i in self.directs:
                 item = QtGui.QListWidgetItem(i[1])
-                self.direct_list.addItem(item)   
-            
+                self.direct_list.addItem(item)
+
             # Highlight the first chat of each type.
             if self.group_list.count() > 0:
                 self.group_list.item(0).setSelected(True)
             self.group_list.setFocus()
-            
+
             if self.direct_list.count() > 0:
                 self.direct_list.item(0).setSelected(True)
             self.direct_list.setFocus()
             
-            # Create buttons for obtaining chat histories.
-            group_btn = QtGui.QPushButton(
-                "Get Group Chat History", self)
-            group_btn.clicked.connect(self.get_group_history)
-            direct_btn = QtGui.QPushButton(
-                "Get Direct Message Chat History", self)
-            direct_btn.clicked.connect(self.get_direct_history)
-            
-            # Initialize the status bar.
-            self.status = QtGui.QStatusBar()
-            self.status.setSizeGripEnabled(False)
-            
-            # Show the labels, chat lists, and buttons.
-            self.layout.addWidget(QtGui.QLabel(""))
-            self.layout.addWidget(QtGui.QLabel("Select a Group Chat"))
-            self.layout.addWidget(self.group_list)
-            self.layout.addWidget(group_btn)
-            self.layout.addWidget(QtGui.QLabel(""))
-            self.layout.addWidget(QtGui.QLabel("Select a Direct Message Chat"))
-            self.layout.addWidget(self.direct_list)
-            self.layout.addWidget(direct_btn)
-            self.layout.addWidget(QtGui.QLabel(""))
-            self.layout.addWidget(self.status)
-            
-            self.list_exists = True
-            
+            # Create and show the interface if one doesn't already exist.
+            if self.list_exists == False:
+                # Create buttons for obtaining chat histories.
+                self.group_btn = QtGui.QPushButton(
+                    "Get Group Chat History", self)
+                self.group_btn.clicked.connect(self.get_group_history)
+                self.direct_btn = QtGui.QPushButton(
+                    "Get Direct Message Chat History", self)
+                self.direct_btn.clicked.connect(self.get_direct_history)
+
+                # Initialize the status bar.
+                self.status = QtGui.QStatusBar()
+                self.status.setSizeGripEnabled(False)
+                
+                # Show the labels, chat lists, and buttons.
+                self.layout.addWidget(QtGui.QLabel(""))
+                self.layout.addWidget(QtGui.QLabel("Select a Group Chat"))
+                self.layout.addWidget(self.group_list)
+                self.layout.addWidget(self.group_btn)
+                self.layout.addWidget(QtGui.QLabel(""))
+                self.layout.addWidget(QtGui.QLabel("Select a Direct Message Chat"))
+                self.layout.addWidget(self.direct_list)
+                self.layout.addWidget(self.direct_btn)
+                self.layout.addWidget(QtGui.QLabel(""))
+                self.layout.addWidget(self.status)
+                
+                self.list_exists = True
+
             self.setWindowTitle("Select a Chat to Retrieve History From")
-    
+
     def get_group_history(self):
         """Retrieve group chat history."""
         group_id = self.groups[self.group_list.currentRow()][0]
-        
+
         self.get_chat(self.token_str, 'group', group_id)
-    
+
     def get_direct_history(self):
         """Retrieve direct message chat history."""
         direct_id = self.directs[self.direct_list.currentRow()][0]
-        
+
         self.get_chat(self.token_str, 'direct', direct_id)
-        
+
     def get_runtime(self, msg_count):
         """Estimate the time to retrieve the chat history based on the
         number of messages in the selected chat.
@@ -396,7 +411,7 @@ class AppWindow(QtGui.QDialog):
         seconds = msg_count/360  # based on tests; 360 messages ~= 1 second
         minutes = seconds/60
         seconds = seconds % 60
-        
+
         runtime = ("Estimated Runtime: %i minutes %i seconds"
             % (minutes, seconds))
 
@@ -409,56 +424,39 @@ class AppWindow(QtGui.QDialog):
         self.setWindowTitle("Retrieving Chat History, Please Wait...")
         # Obtain the relevant URL.
         url = get_URL(token, chat_type, chat_ID)
-        
+
         if chat_type == 'group':
             msg = 'messages'
         elif chat_type == 'direct':
             msg = 'direct_messages'
-        
+
         # Obtain the most recent message date as a starting reference.
         i_json = get_json(url)
         i_time = i_json['response'][msg][0]['created_at']
         i_date = time.strftime('%A, %d %B %Y', time.localtime(i_time))
 
-        # Estimate the runtime.
+        # Estimate the runtime using the number of messages in the chat.
         msg_count = i_json['response']['count']
         self.get_runtime(msg_count)
-        
+
         # Obtain the user's ID to color the user's name in the chat file.
         self_id = get_self_id(token)
 
         f = open(('%s_chat_history.txt' % chat_ID), 'w')
-        create_history(i_json, i_date, self_id, url, chat_type, f)
+        create_history(i_json, i_date, self_id, url, chat_type, f,
+                       msg_count, self.msg_limit)
         f.close()
-        format_history(chat_type, chat_ID) 
+        format_history(chat_type, chat_ID)
         create_css()
-        
+
         self.status.showMessage("")
         self.setWindowTitle("Done")
-            
+
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    
-    aw = AppWindow()
+
+    aw = AppWindow(message_limit)
     aw.setWindowTitle("Enter Your Access Token")
     aw.move(0, 0)
     aw.show()
     sys.exit(app.exec_())
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    

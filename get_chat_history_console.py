@@ -84,9 +84,10 @@ def get_directs(token):
 
     return directs
     
-def create_history(json, old_date, self_id, url, chat_type, f):
+def create_history(json, old_date, self_id, url, chat_type, f, 
+                   msg_count, msg_limit):
     """Create a temporary chat history file.
-    
+
     Retrieve and write down all dates, times, names, and messages in a
     groupme group chat. Messages are retrieved in reverse-chronological
     order---the most recent messages are retrieved first. The file is
@@ -99,29 +100,31 @@ def create_history(json, old_date, self_id, url, chat_type, f):
         url: The URL being worked with.
         chat_type: The type of chat---'group' or 'direct'.
         f: The temporary file being written to.
-
-    Messages are retrieved in sets. The amount of messages per set is
-    equal to 'message_limit'. 
-
-    An 'IndexError' is raised when the total number of messages in the
-    group chat is not a multiple of 'message_limit'. To illustrate: if
-    the total number of messages in the group chat is 257 and the
-    'message_limit' is 100, the final set of messages contains 57
-    messages (257 mod 100). These 57 messages are obtained when
-    iterating from i = 0-56. An attempt to obtain the 58th message
-    corresponding to i = 57 raises the 'IndexError.' This indicates 
-    that the earliest message in the group chat has been retrieved. The
-    date of the group's creation is then written.
+        msg_count: The total number of messages in the chat.
+        msg_limit: The number of messages retrieved in a set.
+        
+    Messages are written down one at a time, each time decrementing 'msg_count'
+    by 1. When this count reaches 0, all messages have been retrieed.
     """
     if chat_type == 'group':
         msg = 'messages'
     elif chat_type == 'direct':
         msg = 'direct_messages'
-        
-    try:
-        for i in range(message_limit):
+  
+    while msg_count > 0:
+        # If there are less than 'msg_limit' messages to obtain, only
+        # iterate through however many messages there are.
+        if msg_count < msg_limit:
+            msg_limit = msg_count % msg_limit
+        for i in range(msg_limit):
             # Parse the data and retrieve times, names, and messages.
-            epoch_time = json['response'][msg][i]['created_at']
+            # If the final number of messages is less than expected, set the
+            # message count to 0 since all messages will have been retrieved.
+            try:
+                epoch_time = json['response'][msg][i]['created_at']
+            except IndexError:
+                msg_count = 0
+                break
             date = time.strftime('%A, %d %B %Y', time.localtime(epoch_time))
 
             user_id = json['response'][msg][i]['user_id']
@@ -150,16 +153,23 @@ def create_history(json, old_date, self_id, url, chat_type, f):
             # Write down times, names, and messages.
             f.write(line.encode('UTF-8', 'replace'))
 
-            # Iterate through the next set of messages.
-            if i == message_limit-1:
-                before_id = json['response'][msg][i]['id']
-                next_url = "%s&before_id=%s" % (url, before_id)
-                next_json = get_json(next_url)
-                create_history(next_json, old_date, self_id, url, chat_type, f)
-                
-    except IndexError:
-        # Finally, write the group creation date.
-        f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)    
+            # Once we have reached the 'msg_limit', store the latest message ID
+            # and use it to obtain the API URL and JSON file for the next set
+            # of messages. If there are no new messages, set the message count
+            # to 0 to finish chat retrieval.
+            msg_count -= 1
+            if msg_count != 0 and i == msg_limit - 1:
+                try:
+                    before_id = json['response'][msg][i]['id']
+                    new_url = "%s&before_id=%s" % (url, before_id)
+                    json = get_json(new_url)
+                except urllib2.HTTPError, err:
+                    if err.code == 304:
+                        msg_count = 0
+
+        if msg_count == 0:
+            # Finally, write the group creation date.
+            f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date) 
         
 def format_history(chat_type, chat_ID):
     """Add HTML headers and footers and order messages from earliest to
@@ -363,7 +373,8 @@ def get_chat(token, chat_type, chat_ID):
 
     # Create the chat history as an HTML file and format it.
     f = open(('%s_chat_history.txt' % chat_ID), 'w')
-    create_history(i_json, i_date, self_id, url, chat_type, f)
+    create_history(i_json, i_date, self_id, url, chat_type, f,
+                   msg_count, message_limit)
     f.close()
     format_history(chat_type, chat_ID)
     create_css()
@@ -373,30 +384,3 @@ if __name__ == '__main__':
     token = get_token()
     list_chats(token)
     get_chat_info(token)
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
