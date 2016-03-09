@@ -26,7 +26,7 @@ from json import load
 
 from PyQt4 import QtGui, QtCore
     
-message_limit = 100  # cannot be greater than 100
+message_limit = 100  # cannot be greater than 100.
 
 def get_URL(token, chat_type, chat_ID):
     """Retrieve the API URL given an access token, chat type, and an ID."""
@@ -90,7 +90,7 @@ def create_history(json, old_date, self_id, url, chat_type, f,
     """Create a temporary chat history file.
 
     Retrieve and write down all dates, times, names, and messages in a
-    groupme group chat. Messages are retrieved in reverse-chronological
+    GroupMe group chat. Messages are retrieved in reverse-chronological
     order---the most recent messages are retrieved first. The file is
     formatted in HTML and pairs with a corresponding CSS file.
 
@@ -337,8 +337,8 @@ class AppWindow(QtGui.QDialog):
 
             self.groups = get_groups(token)
             for i in self.groups:
-                item = QtGui.QListWidgetItem(i[1])
-                self.group_list.addItem(item)
+                chat_name = QtGui.QListWidgetItem(i[1])
+                self.group_list.addItem(chat_name)
 
             # Create the list of direct messaging chats.
             if self.list_exists == False:
@@ -350,8 +350,8 @@ class AppWindow(QtGui.QDialog):
 
             self.directs = get_directs(token)
             for i in self.directs:
-                item = QtGui.QListWidgetItem(i[1])
-                self.direct_list.addItem(item)
+                chat_name = QtGui.QListWidgetItem(i[1])
+                self.direct_list.addItem(chat_name)
 
             # Highlight the first chat of each type.
             if self.group_list.count() > 0:
