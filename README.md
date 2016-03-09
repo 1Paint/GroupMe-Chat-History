@@ -20,7 +20,7 @@ Preview
 Requirements
 -------
 * [Python 2.7.10+](https://www.python.org/downloads/)
-* [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (only necessary for the non-console script)
+* [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (not necessary if you are using 'get_chat_history_console.py')
 * A GroupMe Access Token obtainable by logging in to [https://dev.groupme.com/](https://dev.groupme.com/) and clicking 'Access Token' at the top right.
 
 If you are using the executable version, you do not need Python or PyQt4.
