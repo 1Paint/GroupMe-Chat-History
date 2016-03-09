@@ -12,6 +12,8 @@ Preview
 <img src="http://i.imgur.com/N0Zqphs.png">
 
 <img src="http://i.imgur.com/5wgm16i.png">
+
+<img src="http://i.imgur.com/YzT7iOv.png">
 ### Output
 <img src="http://i.imgur.com/mV7iA3H.png">
 
@@ -19,7 +21,7 @@ Requirements
 -------
 * [Python 2.7.10+](https://www.python.org/downloads/)
 * [PyQt4](https://www.riverbankcomputing.com/software/pyqt/download) (only necessary for the non-console script)
-* A GroupMe Access Token obtainable at by logging in to [https://dev.groupme.com/](https://dev.groupme.com/) and clicking 'Access Token' at the top right.
+* A GroupMe Access Token obtainable by logging in to [https://dev.groupme.com/](https://dev.groupme.com/) and clicking 'Access Token' at the top right.
 
 If you are using the executable version, you do not need Python or PyQt4.
 
