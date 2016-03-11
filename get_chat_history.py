@@ -457,16 +457,16 @@ class AppWindow(QtGui.QDialog):
 
             self.status.showMessage("")
             self.setWindowTitle("Done")
-    
-    # Exit without crashing.
-    def closeEvent(self, event):
-        exit()
+
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
 
-    aw = AppWindow(message_limit)
-    aw.setWindowTitle("Enter Your Access Token")
-    aw.move(0, 0)
-    aw.show()
+    app_window = AppWindow(message_limit)
+    app.setActiveWindow(app_window)
+    
+    app_window.setWindowTitle("Enter Your Access Token")
+    app_window.move(0, 0)
+    app_window.show()
+    
     sys.exit(app.exec_())
