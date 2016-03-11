@@ -27,7 +27,9 @@ If you are using the executable version, you do not need Python or PyQt4.
 
 How To Use
 -------
-Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob/master/documentation/app_manual.pdf)' in the '[documentation](https://github.com/1Paint/groupme_chat_history/tree/master/documentation)' folder. If you are using the console version, run the script and follow the outputted instructions.
+Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob/master/documentation/app_manual.pdf)' in the '[documentation](https://github.com/1Paint/groupme_chat_history/tree/master/documentation)' folder.
+
+If you are using the console version, run the script and follow the outputted instructions. If you are copying and pasting your Access Token and your Access Token does not appear, try right clicking the top of the window, selecting 'Edit', then pressing 'Paste'.
 
 Possible Future Updates
 -------
