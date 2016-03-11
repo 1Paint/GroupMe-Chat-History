@@ -336,26 +336,22 @@ class AppWindow(QtGui.QDialog):
         if valid == False:
             self.setWindowTitle("Please Check Your Access Token")
         elif valid == True:
-            # Create the list of group chats.
+            # Create the lists of group and direct message chats.
             if self.list_exists == False:
                 self.group_list = QtGui.QListWidget()
                 self.group_list.setFixedHeight(100)
-            # If a list already exists, clear it.
+                self.direct_list = QtGui.QListWidget()
+                self.direct_list.setFixedHeight(100)
+            # If lists already exist, clear them.
             else:
                 self.group_list.clear()
+                self.direct_list.clear()
 
+            # Show the chat names.
             self.groups = get_groups(token)
             for i in self.groups:
                 chat_name = QtGui.QListWidgetItem(i[1])
                 self.group_list.addItem(chat_name)
-
-            # Create the list of direct messaging chats.
-            if self.list_exists == False:
-                self.direct_list = QtGui.QListWidget()
-                self.direct_list.setFixedHeight(100)
-            # If a list already exists, clear it.
-            else:
-                self.direct_list.clear()
 
             self.directs = get_directs(token)
             for i in self.directs:
