@@ -85,7 +85,7 @@ def get_directs(token):
 
     return directs
 
-def create_history(json, old_date, self_id, url, chat_type, f, 
+def create_history(json, url, self_id, chat_type, chat_ID,
                    msg_count, msg_limit):
     """Create a temporary chat history file.
 
@@ -96,27 +96,34 @@ def create_history(json, old_date, self_id, url, chat_type, f,
 
     Parameters:
         json: The GroupMe API response in JSON format.
-        old_date: The date of the most recent message.
-        self_id: The user's GroupMe ID.
         url: The URL being worked with.
+        self_id: The user's GroupMe ID.
         chat_type: The type of chat---'group' or 'direct'.
-        f: The temporary file being written to.
+        chat_ID: The chat's ID.
         msg_count: The total number of messages in the chat.
         msg_limit: The number of messages retrieved in a set.
         
     Messages are written down one at a time, each time decrementing 'msg_count'
-    by 1. When this count reaches 0, all messages have been retrieed.
+    by 1. When this count reaches 0, all messages have been retrieved.
     """
+    f = open(('%s_chat_history.txt' % chat_ID), 'w')
+    
     if chat_type == 'group':
         msg = 'messages'
     elif chat_type == 'direct':
         msg = 'direct_messages'
-  
+        
+    # Get the date of the most recent message. This date is needed as a
+    # starting point to tell when the date next changes.
+    initial_time = json['response'][msg][0]['created_at']
+    old_date = time.strftime('%A, %d %B %Y', time.localtime(initial_time))
+    
     while msg_count > 0:
         # If there are less than 'msg_limit' messages to obtain, only
         # iterate through however many messages there are.
         if msg_count < msg_limit:
             msg_limit = msg_count % msg_limit
+            
         for i in range(msg_limit):
             # Parse the data and retrieve times, names, and messages.
             # If the final number of messages is less than expected, set the
@@ -171,6 +178,8 @@ def create_history(json, old_date, self_id, url, chat_type, f,
         if msg_count == 0:
             # Finally, write the group creation date.
             f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)
+    
+    f.close()
 
 def format_history(chat_type, chat_ID):
     """Add HTML headers and footers and order messages from earliest to
@@ -421,36 +430,37 @@ class AppWindow(QtGui.QDialog):
         """Obtain the requested chat history and store it in a formatted
         HTML file with CSS.
         """
-        self.setWindowTitle("Retrieving Chat History, Please Wait...")
         # Obtain the relevant URL.
         url = get_URL(token, chat_type, chat_ID)
 
-        if chat_type == 'group':
-            msg = 'messages'
-        elif chat_type == 'direct':
-            msg = 'direct_messages'
-
-        # Obtain the most recent message date as a starting reference.
+        # Obtain the most recent data set as a starting reference.
         i_json = get_json(url)
-        i_time = i_json['response'][msg][0]['created_at']
-        i_date = time.strftime('%A, %d %B %Y', time.localtime(i_time))
 
-        # Estimate the runtime using the number of messages in the chat.
         msg_count = i_json['response']['count']
-        self.get_runtime(msg_count)
+        if msg_count == 0:
+            self.status.showMessage("This chat does not contain any messages.")
+        else:
+            self.setWindowTitle("Retrieving Chat History, Please Wait...")
+            
+            # Estimate the runtime using the number of messages in the chat.
+            self.get_runtime(msg_count)
 
-        # Obtain the user's ID to color the user's name in the chat file.
-        self_id = get_self_id(token)
+            # Obtain the user's ID to color the user's name in the chat file.
+            self_id = get_self_id(token)
 
-        f = open(('%s_chat_history.txt' % chat_ID), 'w')
-        create_history(i_json, i_date, self_id, url, chat_type, f,
-                       msg_count, self.msg_limit)
-        f.close()
-        format_history(chat_type, chat_ID)
-        create_css()
+            # Create the chat history file, format it into chronological order,
+            # and create a corresponding CSS file.
+            create_history(i_json, url, self_id, chat_type, chat_ID,
+                           msg_count, self.msg_limit)
+            format_history(chat_type, chat_ID)
+            create_css()
 
-        self.status.showMessage("")
-        self.setWindowTitle("Done")
+            self.status.showMessage("")
+            self.setWindowTitle("Done")
+    
+    # Exit without crashing.
+    def closeEvent(self, event):
+        exit()
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)

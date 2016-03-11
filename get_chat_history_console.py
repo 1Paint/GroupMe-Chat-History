@@ -84,38 +84,45 @@ def get_directs(token):
 
     return directs
     
-def create_history(json, old_date, self_id, url, chat_type, f, 
+def create_history(json, url, self_id, chat_type, chat_ID,
                    msg_count, msg_limit):
     """Create a temporary chat history file.
 
     Retrieve and write down all dates, times, names, and messages in a
-    groupme group chat. Messages are retrieved in reverse-chronological
+    GroupMe group chat. Messages are retrieved in reverse-chronological
     order---the most recent messages are retrieved first. The file is
     formatted in HTML and pairs with a corresponding CSS file.
 
     Parameters:
         json: The GroupMe API response in JSON format.
-        old_date: The date of the most recent message.
-        self_id: The user's GroupMe ID.
         url: The URL being worked with.
+        self_id: The user's GroupMe ID.
         chat_type: The type of chat---'group' or 'direct'.
-        f: The temporary file being written to.
+        chat_ID: The chat's ID.
         msg_count: The total number of messages in the chat.
         msg_limit: The number of messages retrieved in a set.
         
     Messages are written down one at a time, each time decrementing 'msg_count'
-    by 1. When this count reaches 0, all messages have been retrieed.
+    by 1. When this count reaches 0, all messages have been retrieved.
     """
+    f = open(('%s_chat_history.txt' % chat_ID), 'w')
+    
     if chat_type == 'group':
         msg = 'messages'
     elif chat_type == 'direct':
         msg = 'direct_messages'
-  
+        
+    # Get the date of the most recent message. This date is needed as a
+    # starting point to tell when the date next changes.
+    initial_time = json['response'][msg][0]['created_at']
+    old_date = time.strftime('%A, %d %B %Y', time.localtime(initial_time))
+    
     while msg_count > 0:
         # If there are less than 'msg_limit' messages to obtain, only
         # iterate through however many messages there are.
         if msg_count < msg_limit:
             msg_limit = msg_count % msg_limit
+                
         for i in range(msg_limit):
             # Parse the data and retrieve times, names, and messages.
             # If the final number of messages is less than expected, set the
@@ -169,7 +176,9 @@ def create_history(json, old_date, self_id, url, chat_type, f,
 
         if msg_count == 0:
             # Finally, write the group creation date.
-            f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date) 
+            f.write('<tr><td class="date" colspan="3">%s</td></tr>' % old_date)
+    
+    f.close()
         
 def format_history(chat_type, chat_ID):
     """Add HTML headers and footers and order messages from earliest to
@@ -300,9 +309,9 @@ def get_chat_info(token):
     
     # Obtain the chat ID from the user and retrieve the chat history.
     while True:
-        try: 
+        try:
             chat_ID = raw_input("Enter the chat ID of the chat or 'back' "
-                                "to change the chat type: ")
+                                    "to change the chat type: ")
             if chat_ID == 'back':
                 break
             else:
@@ -311,7 +320,8 @@ def get_chat_info(token):
                 print "Done."
                 break
         except:
-            print "The chat ID entered is invalid. Type in an ID or 'back'."
+            print ("The chat ID entered is invalid, or there are no messagse"
+                   " in the chat. Type in a valid ID or 'back'.")
          
     get_chat_info(token)
     
@@ -322,6 +332,7 @@ def list_chats(token):
     directs = get_directs(token)
     attributes = ['ID', 'Name']
     
+    # List the chats in an easy-to-read format.
     col_width = max(len(group[0]) for group in groups) + 2
     print "\nGroup Chats:"
     print "".join(i.ljust(col_width) for i in attributes)
@@ -354,28 +365,28 @@ def get_chat(token, chat_type, chat_ID):
     # Obtain the relevant URL.
     url = get_URL(token, chat_type, chat_ID)
     
-    if chat_type == 'group':
-        msg = 'messages'
-    elif chat_type == 'direct':
-        msg = 'direct_messages'
-    
     # Obtain the most recent message date as a starting reference.
     i_json = get_json(url)
-    i_time = i_json['response'][msg][0]['created_at']
-    i_date = time.strftime('%A, %d %B %Y', time.localtime(i_time))
     
-    # Estimate the runtime.
+    # Try obtaining info for the first message in the chat. If the info cannot
+    # be found, then the chat ID entered is invalid, or the chat has no
+    # messages.
+    try:
+        message_time = json['response'][msg][0]['created_at']
+    except:
+        raise
+        
+    # Estimate the runtime using the number of messages in the chat.
     msg_count = i_json['response']['count']
     get_runtime(msg_count)
         
     # Obtain the user's ID to color the user's name in the chat file.
     self_id = get_self_id(token)
 
-    # Create the chat history as an HTML file and format it.
-    f = open(('%s_chat_history.txt' % chat_ID), 'w')
-    create_history(i_json, i_date, self_id, url, chat_type, f,
+    # Create the chat history file, format it into chronological order, and
+    # create a corresponding CSS file.
+    create_history(i_json, url, self_id, chat_type, chat_ID,
                    msg_count, message_limit)
-    f.close()
     format_history(chat_type, chat_ID)
     create_css()
            
