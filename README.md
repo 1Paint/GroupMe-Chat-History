@@ -27,7 +27,7 @@ If you are using the executable version, you do not need Python or PyQt4.
 
 How To Use
 -------
-Download this repository via Git or by pressing the <img src="http://i.imgur.com/RAFO5da.png button" align="top"> button.
+Download this repository via Git or by pressing the <a href="https://github.com/1Paint/GroupMe-Chat-History/archive/master.zip"><img src="http://i.imgur.com/RAFO5da.png button" align="top"></a> button.
 Download the necessary requirements as indicated above. Run '.py' files with Python.
 
 Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob/master/documentation/app_manual.pdf)' in the '[documentation](https://github.com/1Paint/groupme_chat_history/tree/master/documentation)' folder on how to use the application.
