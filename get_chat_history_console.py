@@ -171,8 +171,12 @@ def create_history(json, url, self_id, chat_type, chat_ID,
                     new_url = "%s&before_id=%s" % (url, before_id)
                     json = get_json(new_url)
                 except urllib2.HTTPError, err:
-                    if err.code == 304:
-                        msg_count = 0
+                    if err.code != 304:
+                        f.write('<h1>ERROR: %s</h1>' % err.code)
+                        f.write('<h1>chat_type: %s</h1>' % chat_type)
+                        f.write('<h1>chat_ID: %s</h1>' % chat_ID)
+                        f.write('<h1>latest_message_id: %s</h1>' % before_id)
+                    msg_count = 0
 
         if msg_count == 0:
             # Finally, write the group creation date.
