@@ -164,7 +164,7 @@ def create_history(json, url, self_id, chat_type, chat_ID,
             # Once we have reached the 'msg_limit', store the latest message ID
             # and use it to obtain the API URL and JSON file for the next set
             # of messages. If there are no new messages, set the message count
-            # to 0 to finish chat retrieval.
+            # to 0 to finish chat retrieval. Record HTTPErrors.
             msg_count -= 1
             if msg_count != 0 and i == msg_limit - 1:
                 try:
