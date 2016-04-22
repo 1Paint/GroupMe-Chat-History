@@ -8,7 +8,7 @@ get_chat_history
 
 Update v1.1 (April 21, 2016)
 -------
-* A 'Repair' function now enables one to fix a chat history file whose chat retrieval was prematurely terminated due to an HTTP Error. Only works for chat histories obtained using v1.1+.
+* A 'Repair' function now enables one to fix a chat history file whose chat retrieval was prematurely terminated due to an HTTP Error. Only works for chat histories obtained using v1.1+. The runtime listed when repairing chat histories is not accurate.
 * The time of chat history retrieval is now added to the end of the chat history file name.
 * Whitespace at the beginning and end of an inputted token are now ignored. Should fix the bugs people have been having with their tokens.
 * Console version will now have lower/no priority in terms of updates.
@@ -17,6 +17,11 @@ To-do
 -------
 * Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
 * Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
+* Update application documentation (for repairing/updating).
+* Merge get_error_details and get_update_details.
+* Get accurate runtimes when repairing (and updating) chat histories.
+* Find alternative to using 'readlines()' to avoid large memory usage.
+* Possibly split extremely large files into separate files.
 
 Preview
 -------
