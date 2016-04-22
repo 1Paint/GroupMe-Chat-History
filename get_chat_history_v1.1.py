@@ -497,8 +497,12 @@ class AppWindow(QtGui.QDialog):
         url = get_URL(token, chat_type, chat_ID, msg_ID)
 
         # Obtain the most recent data set as a starting reference.
-        i_json = get_json(url)
-
+        try:
+            i_json = get_json(url)
+        except urllib2.HTTPError, err:
+            self.status.showMessage("HTTP Error %s. Try again later." % err.code)
+            return
+            
         msg_count = i_json['response']['count']
         if msg_count == 0:
             self.status.showMessage("This chat does not contain any messages.")
