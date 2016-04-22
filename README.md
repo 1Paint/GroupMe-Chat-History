@@ -8,15 +8,15 @@ get_chat_history
 
 Update v1.1 (April 21, 2016)
 -------
-* A 'Repair' function now enables one to fix a chat history file whose chat retrieval was prematurely terminated due to an HTTP Error. Only works for chat histories obtained using v1.1+. The runtime listed when repairing chat histories is not accurate.
+* A 'Repair' function now enables one to fix a chat history file whose chat retrieval was prematurely terminated due to an HTTP Error. Images shown below. Only works for chat histories obtained using v1.1+. The runtime listed when repairing chat histories is not accurate.
+* The time of chat history retrieval is now added to the end of the chat history file name.
+* Whitespace at the beginning and end of an inputted token are now ignored. Should fix the bugs people have been having with their tokens.
+* Console version will now have lower/no priority in terms of updates.
 
 ### Chat History File Needing Repair
 <img src="http://i.imgur.com/pXa8QMl.png">
 ### Application with added file selection and Repair/Update functions
 <img src="http://i.imgur.com/NzD2xv8.png">
-* The time of chat history retrieval is now added to the end of the chat history file name.
-* Whitespace at the beginning and end of an inputted token are now ignored. Should fix the bugs people have been having with their tokens.
-* Console version will now have lower/no priority in terms of updates.
 
 To-do
 -------
