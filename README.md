@@ -3,8 +3,20 @@ get_chat_history
 
 **'get_chat_history'** is an application that communicates with [GroupMe's API](https://dev.groupme.com/) and can retrieve and download the chat histories of a GroupMe user given that user's GroupMe Access Token. Three versions of the application exists:
 * **get_chat_history.py** - interacts with the user via a windowed GUI. Run this script only if you have both Python and PyQt4.
-* **get_chat_history_console.py** - interacts with the user via the command line or console. Run this script if you have Python but not PyQt4.
+* **get_chat_history_console.py (NO LONGER UP-TO-DATE)** - interacts with the user via the command line or console. Run this script if you have Python but not PyQt4.
 * **get_chat_history.exe** - an executable file that does what 'get_chat_history.py' does. Run this if you do not have Python or PyQt4. Obtain by downloading and extracting the .rar file in the '[executable](https://github.com/1Paint/groupme_chat_history/tree/master/executable)' folder. Download by pressing 'View Raw'.
+
+Update v1.1 (April 21, 2016)
+-------
+* A 'Repair' function now enables one to fix a chat history file whose chat retrieval was prematurely terminated due to an HTTP Error. Only works for chat histories obtained using v1.1+.
+* The time of chat history retrieval is now added to the end of the chat history file name.
+* Whitespace at the beginning and end of an inputted token are now ignored. Should fix the bugs people have been having with their tokens.
+* Console version will now have lower/no priority in terms of updates.
+
+To-do
+-------
+* Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
+* Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
 
 Preview
 -------
@@ -33,8 +45,3 @@ Download the necessary requirements as indicated above. Run '.py' files with Pyt
 Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob/master/documentation/app_manual.pdf)' in the '[documentation](https://github.com/1Paint/groupme_chat_history/tree/master/documentation)' folder on how to use the application.
 
 If you are using the console version, run the script and follow the outputted instructions. If you are copying and pasting your Access Token and your Access Token does not appear, try right clicking the top of the window, selecting 'Edit', then pressing 'Paste'.
-
-Possible Future Updates
--------
-* A way to update existing chat history files. Not a top priority since this application is designed for one-time use.
-* Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
