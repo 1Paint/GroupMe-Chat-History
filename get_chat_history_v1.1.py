@@ -494,6 +494,7 @@ class AppWindow(QtGui.QDialog):
         HTML file with CSS.
         """
         # Obtain the relevant URL.
+        url_general = get_URL(token, chat_type, chat_ID, None)
         url = get_URL(token, chat_type, chat_ID, msg_ID)
 
         # Obtain the most recent data set as a starting reference.
@@ -517,13 +518,16 @@ class AppWindow(QtGui.QDialog):
 
             # Create the chat history file, format it into chronological order,
             # and create a corresponding CSS file.
-            create_history(i_json, url, self_id, chat_type, chat_ID,
+            create_history(i_json, url_general, self_id, chat_type, chat_ID,
                            msg_count, self.msg_limit, msg_ID)
             format_history(chat_type, chat_ID, msg_ID)
             create_css()
-
-            self.status.showMessage("")
-            self.setWindowTitle("Done")
+            
+            # Additional steps are needed if msg_ID is provided. A msg_ID is
+            # provided when repairing/updating chat histories.
+            if not msg_ID:
+                self.status.showMessage("")
+                self.setWindowTitle("Done")
     
     def select_chat_file(self):
         """Allow the user to select a file which is subsequently written to
@@ -541,7 +545,16 @@ class AppWindow(QtGui.QDialog):
         method returns None.
         """
         try:
-            error_line = linecache.getline(chat_name, 11)
+            error_line = ""
+            
+            # Get the line in the chat containing error and chat details.
+            file = open(chat_name)
+            for i, line in enumerate(file):
+                if i == 10: # Error details are recorded in line 11 of file.
+                    error_line = line
+                elif i > 10:
+                    break
+            file.close()
             error_details = re.search('<p hidden repair>(.*)</p>', error_line)
             return error_details
         except:
@@ -552,7 +565,16 @@ class AppWindow(QtGui.QDialog):
         message. This includes the chat type and ID and the most recent message
         ID and its date."""
         try:
-            update_line = linecache.getline(chat_name, 9)
+            update_line = ""
+            
+            # Get the line in the chat containing update and chat details.
+            file = open(chat_name)
+            for i, line in enumerate(file):
+                if i == 8: # Update details are recorded in line 11 of file.
+                    update_line = line
+                elif i > 8:
+                    break
+            file.close()
             update_details = re.search('<p hidden update>(.*)</p>', update_line)
             return update_details
         except:
@@ -597,6 +619,8 @@ class AppWindow(QtGui.QDialog):
                 
                 self.merge(chat_ID, chat_type, chat_original, chat_repair, 
                            date_duplicate)
+                self.status.showMessage("")
+                self.setWindowTitle("Done")
         except IOError:
             self.status.showMessage("The file does not exist.")     
             
