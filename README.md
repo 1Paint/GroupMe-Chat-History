@@ -13,21 +13,6 @@ Update v1.1 (April 21, 2016)
 * Whitespace at the beginning and end of an inputted token are now ignored. Should fix the bugs people have been having with their tokens.
 * Console version will now have lower/no priority in terms of updates.
 
-### Chat History File Needing Repair
-<img src="http://i.imgur.com/pXa8QMl.png">
-### Application with added file selection and Repair/Update functions
-<img src="http://i.imgur.com/NzD2xv8.png">
-
-To-do
--------
-* Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
-* Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
-* Update application documentation (for repairing/updating).
-* Merge get_error_details() and get_update_details().
-* Get accurate runtimes when repairing (and updating) chat histories.
-* Find alternative to using 'readlines()' to avoid large memory usage.
-* Possibly split extremely large files into separate files.
-
 Preview
 -------
 ### Application
@@ -55,3 +40,13 @@ Download the necessary requirements as indicated above. Run '.py' files with Pyt
 Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob/master/documentation/app_manual.pdf)' in the '[documentation](https://github.com/1Paint/groupme_chat_history/tree/master/documentation)' folder on how to use the application.
 
 If you are using the console version, run the script and follow the outputted instructions. If you are copying and pasting your Access Token and your Access Token does not appear, try right clicking the top of the window, selecting 'Edit', then pressing 'Paste'.
+
+To-do
+-------
+* Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
+* Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
+* Update application documentation (for repairing/updating).
+* Merge get_error_details() and get_update_details().
+* Get accurate runtimes when repairing (and updating) chat histories.
+* Find alternative to using 'readlines()' to avoid large memory usage.
+* Possibly split extremely large files into separate files.
