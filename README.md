@@ -46,6 +46,7 @@ To-do
 * Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
 * Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
 * Update application documentation (for repairing/updating).
+* Refactor code and separate concerns so that create_history() and AppWindow's get_chat() don't need to take in so many parameters.
 * Merge get_error_details() and get_update_details().
 * Get accurate runtimes when repairing (and updating) chat histories.
 * Find alternative to using 'readlines()' to avoid large memory usage.
