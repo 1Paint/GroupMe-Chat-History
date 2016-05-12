@@ -41,6 +41,10 @@ Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob
 
 If you are using the console version, run the script and follow the outputted instructions. If you are copying and pasting your Access Token and your Access Token does not appear, try right clicking the top of the window, selecting 'Edit', then pressing 'Paste'.
 
+Have Problems?
+-------
+Open up an issue in the 'Issues' tab at the top of the page.
+
 To-do
 -------
 * Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
