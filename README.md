@@ -41,11 +41,16 @@ Please see '[app_manual.pdf](https://github.com/1Paint/groupme_chat_history/blob
 
 If you are using the console version, run the script and follow the outputted instructions. If you are copying and pasting your Access Token and your Access Token does not appear, try right clicking the top of the window, selecting 'Edit', then pressing 'Paste'.
 
+Have Problems?
+-------
+Open up an issue in the 'Issues' tab at the top of the page.
+
 To-do
 -------
 * Add function to update existing chat history files. Should work beginning with chat history files retrieved using v1.1+.
 * Distinguish users in the chat histories with more colors&mdash;not just green for the user and blue for everyone else.
 * Update application documentation (for repairing/updating).
+* Refactor code and separate concerns so that create_history() and AppWindow's get_chat() don't need to take in so many parameters.
 * Merge get_error_details() and get_update_details().
 * Get accurate runtimes when repairing (and updating) chat histories.
 * Find alternative to using 'readlines()' to avoid large memory usage.
