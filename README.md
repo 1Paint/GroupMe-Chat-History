@@ -1,3 +1,7 @@
+**NO LONGER BEING MAINTAINED**
+
+I will attempt to update this in the future, but no promises.
+
 get_chat_history
 =======
 
