@@ -375,8 +375,12 @@ def get_chat(token, chat_type, chat_ID):
     # Try obtaining info for the first message in the chat. If the info cannot
     # be found, then the chat ID entered is invalid, or the chat has no
     # messages.
+    if chat_type == 'group':
+        msg = 'messages'
+    elif chat_type == 'direct':
+        msg = 'direct_messages'
     try:
-        message_time = json['response'][msg][0]['created_at']
+        message_time = i_json['response'][msg][0]['created_at']
     except:
         raise
         
