@@ -1,6 +1,4 @@
-**NO LONGER BEING MAINTAINED**
-
-I will attempt to update this in the future, but no promises.
+# NO LONGER BEING MAINTAINED, PLEASE DO NOT USE
 
 get_chat_history
 =======
